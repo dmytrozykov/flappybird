@@ -1,0 +1,42 @@
+# Compiled files
+*.luac
+
+# macOS junk
+.DS_Store
+
+# Windows junk
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux junk
+*~
+
+# LÖVE packed games
+*.love
+
+# LÖVE build artifacts
+*.exe
+*.app
+*.dll
+*.so
+*.zip
+*.tar.gz
+
+# VSCode and other editor config
+.vscode/
+.idea/
+*.swp
+
+# Backup files
+*.bak
+*.tmp
+*.old
+
+# Logs
+*.log
+
+# Build or dist directories (if any)
+build/
+dist/
+
