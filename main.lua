@@ -1,31 +1,38 @@
 -- main.lua
 
+-- Imports
+local StateManager = require("StateManager")
+
+-- Global variables
+---@type StateManager
+local stateManager
+
 function love.load()
-  -- Initaliziation goes here
+  stateManager = StateManager:new()
 end
 
 ---@param dt number
 function love.update(dt)
-  -- Update goes here
+  stateManager:update(dt)
 end
 
 ---@param key love.KeyConstant
 ---@param scancode love.Scancode
 ---@param isrepeat boolean
 function love.keypressed(key, scancode, isrepeat)
-  -- Key press logic goes here
-  print("Key '" .. key .. "' pressed!")
+  stateManager:keypressed(key, scancode, isrepeat)
 end
 
----@param key love.KeyConstant
----@param scancode love.Scancode
-function love.keyreleased(key, scancode)
-  -- Key release logic goes here
-  print("Key '" .. key .. "' released!")
+---@param x number
+---@param y number
+---@param button number
+---@param istouch boolean
+---@param presses number
+function love.mousepressed(x, y, button, istouch, presses)
+  stateManager:mousepressed(x, y, button, istouch, presses)
 end
 
 function love.draw()
-  -- Draw goes here
-  love.graphics.print("Flappy Bird", 300, 400)
+  stateManager:draw()
 end
 
