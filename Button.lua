@@ -1,6 +1,7 @@
 -- Button.lua
 
 local Colors = require("Colors")
+local ScreenSpace = require("ScreenSpace")
 
 ---@class Button
 ---@field x number
@@ -10,6 +11,8 @@ local Colors = require("Colors")
 ---@field text string
 ---@field font love.Font
 ---@field onClick function
+---@field isHovered boolean
+---@field isPressed boolean
 local Button = {}
 
 ---@param x number
@@ -39,9 +42,10 @@ end
 
 function Button:update()
   local mx, my = love.mouse.getPosition()
+  local x, y = self:getScreenPosition()
 
-  self.isHovered = mx >= self.x and mx <= self.x + self.width and
-                   my >= self.y and my <= self.y + self.height
+  self.isHovered = mx >= x and mx <= x + self.width and
+                   my >= y and my <= y + self.height
 end
 
 ---@param button number
@@ -71,17 +75,27 @@ function Button:draw()
   end
 
   love.graphics.setColor(bgColor)
-  love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+
+  local x, y = self:getScreenPosition()
+
+  love.graphics.rectangle("fill", x, y, self.width, self.height)
 
   love.graphics.setColor(Colors.button.text)
   love.graphics.setFont(self.font)
     
   local textWidth = self.font:getWidth(self.text)
   local textHeight = self.font:getHeight()
-  local textX = self.x + (self.width - textWidth) / 2
-  local textY = self.y + (self.height - textHeight) / 2
+  local textX = x + (self.width - textWidth) / 2
+  local textY = y + (self.height - textHeight) / 2
 
   love.graphics.print(self.text, textX, textY)
+end
+
+---@return number
+---@return number
+function Button:getScreenPosition()
+  local x, y = ScreenSpace.toScreen(self.x, self.y)
+  return x - self.width / 2, y - self.height / 2
 end
 
 return Button

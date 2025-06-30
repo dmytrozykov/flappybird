@@ -13,7 +13,7 @@ local MenuState = {
 ---@param stateManager StateManager
 ---@return MenuState
 function MenuState:new(stateManager)
-  local playButton = Button:new(200, 200, 100, 50, "Play")
+  local playButton = Button:new(0, 0, 100, 50, "Play")
   playButton.font = love.graphics.newFont(32)
   playButton.onClick = function()
     print("Play pressed")
