@@ -10,6 +10,8 @@ local Colors = {
     pressed = {0.2, 0.2, 0.2},
     text = {1, 1, 1}
   },
+
+  text = {1, 1, 1},
 }
 
 return Colors

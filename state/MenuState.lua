@@ -2,6 +2,8 @@
 
 local Colors = require("Colors")
 local Button = require("Button")
+local Font = require("Font")
+local ScreenSpace = require("ScreenSpace")
 
 ---@class MenuState
 ---@field stateManger StateManager
@@ -14,7 +16,7 @@ local MenuState = {
 ---@return MenuState
 function MenuState:new(stateManager)
   local playButton = Button:new(0, 0, 100, 50, "Play")
-  playButton.font = love.graphics.newFont(32)
+  playButton.font = Font.upheaval.paragraph
   playButton.onClick = function()
     print("Play pressed")
   end
@@ -30,11 +32,21 @@ end
 function MenuState:draw()
   love.graphics.setBackgroundColor(Colors.background)
 
+  love.graphics.setColor(Colors.text)
+  love.graphics.setFont(Font.upheaval.title)
+
+  local title = "Flappy Bird"
+  local titleWidth = Font.upheaval.title:getWidth(title)
+  local titleX, titleY = ScreenSpace.toScreen(0, -0.5)
+  titleX = titleX - titleWidth / 2
+
+  love.graphics.print(title, titleX, titleY)
+
   self.playButton:draw()
 end
 
 ---@param dt number
-function MenuState:update(dt) 
+function MenuState:update(dt)
   self.playButton:update()
 end
 
