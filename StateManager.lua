@@ -69,4 +69,16 @@ function StateManager:mousepressed(x, y, button, istouch, presses)
   end
 end
 
+---@param x number
+---@param y number
+---@param button number
+---@param istouch boolean
+---@param presses number
+function StateManager:mousereleased(x, y, button, istouch, presses)
+  if self.current and self.current.mousepressed then
+    self.current:mousereleased(x, y, button, istouch, presses)
+  end
+end
+
+
 return StateManager
