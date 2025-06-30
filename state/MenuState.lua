@@ -4,6 +4,7 @@ local Colors = require("Colors")
 local Button = require("Button")
 local Font = require("Font")
 local ScreenSpace = require("ScreenSpace")
+local Sprite = require("Sprite")
 
 ---@class MenuState
 ---@field stateManger StateManager
@@ -29,9 +30,7 @@ function MenuState:new(stateManager)
   return state
 end
 
-function MenuState:draw()
-  love.graphics.setBackgroundColor(Colors.background)
-
+local function drawTitle()
   love.graphics.setColor(Colors.text)
   love.graphics.setFont(Font.upheaval.title)
 
@@ -41,6 +40,26 @@ function MenuState:draw()
   titleX = titleX - titleWidth / 2
 
   love.graphics.print(title, titleX, titleY)
+end
+
+local function drawBird()
+  local image = Sprite.bird[1]
+  image:setFilter("nearest", "nearest")
+
+
+  local x, y = ScreenSpace.toScreen(0, -0.7)
+  local scale = 10
+  x = x - (image:getWidth() * scale) / 2
+  y = y - (image:getHeight() * scale) / 2
+
+  love.graphics.draw(image, x, y, 0, scale, scale)
+end
+
+function MenuState:draw()
+  love.graphics.setBackgroundColor(Colors.background)
+
+  drawBird()
+  drawTitle()
 
   self.playButton:draw()
 end
