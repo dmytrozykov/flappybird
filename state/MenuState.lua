@@ -5,10 +5,12 @@ local Button = require("Button")
 local Font = require("Font")
 local ScreenSpace = require("ScreenSpace")
 local Sprite = require("Sprite")
+local PlayState = require("state/PlayState")
 
 ---@class MenuState
 ---@field stateManger StateManager
 ---@field playButton Button
+---@field name string
 local MenuState = {
   name = "Menu"
 }
@@ -16,16 +18,17 @@ local MenuState = {
 ---@param stateManager StateManager
 ---@return MenuState
 function MenuState:new(stateManager)
+  local state = {
+    stateManager = stateManager,
+  }
+
   local playButton = Button:new(0, 0, 100, 50, "Play")
   playButton.font = Font.upheaval.paragraph
   playButton.onClick = function()
-    print("Play pressed")
+    state.stateManager:switch(PlayState.name)
   end
+  state.playButton = playButton
 
-  local state = {
-    stateManager = stateManager,
-    playButton = playButton,
-  }
   setmetatable(state, {__index = self})
   return state
 end

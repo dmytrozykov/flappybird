@@ -3,6 +3,7 @@
 -- Imports
 local StateManager = require("StateManager")
 local MenuState = require("state/MenuState")
+local PlayState = require("state/PlayState")
 
 -- Global variables
 ---@type StateManager
@@ -12,6 +13,7 @@ function love.load()
   stateManager = StateManager:new()
 
   stateManager:add(MenuState.name, MenuState:new(stateManager))
+  stateManager:add(PlayState.name, PlayState:new(stateManager))
 
   stateManager:switch(MenuState.name)
 end
