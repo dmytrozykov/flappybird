@@ -5,14 +5,13 @@ local Button = require("Button")
 local Font = require("Font")
 local ScreenSpace = require("ScreenSpace")
 local Sprite = require("Sprite")
-local PlayState = require("state/PlayState")
 
 ---@class MenuState
 ---@field stateManger StateManager
 ---@field playButton Button
 ---@field name string
 local MenuState = {
-  name = "Menu"
+  name = "MenuState"
 }
 
 ---@param stateManager StateManager
@@ -25,7 +24,7 @@ function MenuState:new(stateManager)
   local playButton = Button:new(0, 0, 100, 50, "Play")
   playButton.font = Font.upheaval.paragraph
   playButton.onClick = function()
-    state.stateManager:switch(PlayState.name)
+    state.stateManager:switch("PlayState")
   end
   state.playButton = playButton
 
@@ -48,7 +47,6 @@ end
 local function drawBird()
   local image = Sprite.bird[1]
   image:setFilter("nearest", "nearest")
-
 
   local x, y = ScreenSpace.toScreen(0, -0.7)
   local scale = 10
