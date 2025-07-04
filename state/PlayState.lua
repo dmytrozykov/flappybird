@@ -11,16 +11,25 @@ local PlayState = {
   name = "PlayState"
 }
 
+function PlayState:reset()
+  local width, height = love.graphics.getDimensions()
+  self.bird = Bird:new({x = width / 2, y = height / 2})
+end
+
 ---@param stateManager StateManager
 ---@return PlayState
 function PlayState:new(stateManager)
-  local width, height = love.graphics.getDimensions()
+  ---@type PlayState
   local state = {
     stateManager = stateManager,
-    bird = Bird:new({x = width / 2, y = height / 2})
   }
   setmetatable(state, {__index = self})
+  state:reset()
   return state
+end
+
+function PlayState:enter()
+  self:reset()
 end
 
 function PlayState:draw()
@@ -39,6 +48,8 @@ function PlayState:keypressed(key)
   if key == "escape" then
     self.stateManager:switch("MenuState")
   end
+
+  self.bird:keypressed(key)
 end
 
 return PlayState
