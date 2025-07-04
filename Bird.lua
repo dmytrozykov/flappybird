@@ -1,6 +1,7 @@
 -- Bird.lua
 
 local Sprite = require("Sprite")
+local Sound = require("Sound")
 
 ---@class Bird
 ---@field sprite love.Image
@@ -8,9 +9,11 @@ local Sprite = require("Sprite")
 ---@field velocity Velocity
 ---@field gravityForce number
 ---@field flapForce number
+---@field flapSound love.Source
 local Bird = {
   gravityForce = 1500,
   flapForce = 600,
+  flapSound = Sound.flap
 }
 
 ---@param position Position
@@ -19,7 +22,7 @@ function Bird:new(position)
   local bird = {
     sprite = Sprite.bird[1],
     position = position,
-    velocity = {x=0, y=0}
+    velocity = {x=0, y=0},
   }
   setmetatable(bird, {__index = self})
   return bird
@@ -53,6 +56,8 @@ end
 ---@param key love.KeyConstant
 function Bird:keypressed(key)
   if key == "space" then
+    Bird.flapSound:stop()
+    Bird.flapSound:play()
     self.velocity.y = -Bird.flapForce
   end
 end
