@@ -10,6 +10,12 @@ local PlayState = require("state/PlayState")
 local stateManager
 
 function love.load()
+  love.window.setTitle("Flappy Bird")
+  love.window.setMode(360, 800, {
+    vsync = true,
+    resizable = false,
+  })
+
   stateManager = StateManager:new()
 
   stateManager:add(MenuState.name, MenuState:new(stateManager))
