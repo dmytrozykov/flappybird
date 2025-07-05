@@ -8,9 +8,8 @@ local Sprite = {
     love.graphics.newImage(spriteDirectory .. "bird/bird-0.png"),
     love.graphics.newImage(spriteDirectory .. "bird/bird-1.png"),
   },
-  pipe = {
-    spriteDirectory .. "pipe.png",
-  },
+  pipe = love.graphics.newImage(spriteDirectory .. "pipe/pipe.png"),
+  pipe_end = love.graphics.newImage(spriteDirectory .. "pipe/pipe-end.png"),
 }
 
 return Sprite
