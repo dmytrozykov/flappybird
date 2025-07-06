@@ -4,7 +4,7 @@ local Bird = require("Bird")
 local Pipe = require("Pipe")
 
 -- Constants
-local PIPE_SPAWN_OFFSET = 150
+local PIPE_SPAWN_DELAY = 4
 local ESCAPE_KEY = "escape"
 local MENU_STATE_NAME = "MenuState"
 
@@ -12,7 +12,8 @@ local MENU_STATE_NAME = "MenuState"
 ---@field name string
 ---@field stateManager StateManager
 ---@field bird Bird
----@field pipe Pipe
+---@field pipes Pipe[]
+---@field pipeSpawnTimer number
 ---@field screenWidth number
 ---@field screenHeight number
 local PlayState = {
@@ -37,20 +38,32 @@ function PlayState:getBirdSpawnPosition()
     }
 end
 
----Calculate initial pipe position
+---Calculate pipe spawn position
 ---@return Position
 function PlayState:getPipeSpawnPosition()
     local width, height = self:getScreenDimensions()
+    local screenBasedOffset = height * 0.2
+    local randomOffset = math.random(-screenBasedOffset, screenBasedOffset)
+
+    -- First pipe should not have any offset
+    if #self.pipes == 0 then
+        randomOffset = 0
+    end
+
     return {
-        x = width + PIPE_SPAWN_OFFSET,
-        y = height / 2
+        x = width,
+        y = height / 2 + randomOffset
     }
 end
 
 ---Initialize game entities
 function PlayState:initializeEntities()
     self.bird = Bird:new(self:getBirdSpawnPosition())
-    self.pipe = Pipe:new(self:getPipeSpawnPosition())
+    self.pipes = {}
+end
+
+function PlayState:initializeTimer()
+    self.pipeSpawnTimer = 0
 end
 
 ---Reset game state to initial conditions
@@ -59,6 +72,7 @@ function PlayState:reset()
     self.screenWidth = nil
     self.screenHeight = nil
     self:initializeEntities()
+    self:initializeTimer()
 end
 
 ---Constructor for PlayState
@@ -69,10 +83,7 @@ function PlayState:new(stateManager)
     local state = {
         stateManager = stateManager,
     }
-    
     setmetatable(state, {__index = self})
-    state:reset()
-    
     return state
 end
 
@@ -88,8 +99,12 @@ end
 
 ---Draw all game entities
 function PlayState:drawEntities()
+    -- Draw pipes
+    for _, pipe in ipairs(self.pipes) do
+        pipe:draw()
+    end
+
     self.bird:draw()
-    self.pipe:draw()
 end
 
 ---Main draw function
@@ -102,13 +117,35 @@ end
 ---@param dt number
 function PlayState:updateEntities(dt)
     self.bird:update(dt)
-    self.pipe:update(dt)
+    
+    -- Update pipes
+    for i, pipe in ipairs(self.pipes) do
+        local onOffScreen = function ()
+            table.remove(self.pipes, i)
+        end
+        pipe:update(dt, onOffScreen)
+    end
+end
+
+function PlayState:spawnPipe()
+    local pipe = Pipe:new(self:getPipeSpawnPosition())
+    table.insert(self.pipes, pipe)
+end
+
+---@param dt number
+function PlayState:updateTimer(dt)
+    self.pipeSpawnTimer = self.pipeSpawnTimer + dt
+    if self.pipeSpawnTimer >= PIPE_SPAWN_DELAY then
+        self:spawnPipe()
+        self.pipeSpawnTimer = self.pipeSpawnTimer - PIPE_SPAWN_DELAY
+    end
 end
 
 ---Main update function
 ---@param dt number
 function PlayState:update(dt)
     self:updateEntities(dt)
+    self:updateTimer(dt)
 end
 
 ---Handle escape key press

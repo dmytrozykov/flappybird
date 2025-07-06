@@ -124,19 +124,14 @@ function Pipe:isOffScreen()
     return self.position.x + self:getWidth() < 0
 end
 
----Reset pipe position to right side of screen
-function Pipe:resetPosition()
-    local width, _ = love.graphics.getDimensions()
-    self.position.x = width
-end
-
 ---Update pipe position
 ---@param dt number
-function Pipe:update(dt)
+---@param onOffScreen function
+function Pipe:update(dt, onOffScreen)
     self.position.x = self.position.x - self.moveSpeed * dt
     
     if self:isOffScreen() then
-        self:resetPosition()
+        onOffScreen()
     end
 end
 
