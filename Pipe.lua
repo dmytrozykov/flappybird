@@ -3,7 +3,7 @@ local Sprite = require("Sprite")
 
 -- Constants
 local DRAW_SCALE = 10
-local PIPE_OFFSET = 180
+local PIPE_OFFSET = 173
 local DEFAULT_MOVE_SPEED = 50
 
 ---@class Pipe
@@ -122,6 +122,34 @@ end
 ---@return boolean
 function Pipe:isOffScreen()
     return self.position.x + self:getWidth() < 0
+end
+
+---@return AABB top, AABB bottom
+function Pipe:getAABBs()
+    local verticalPosition, _, spriteHeight, _, _ = self:calculatePipeDrawingParams(-self.pipeOffset)
+    local height = verticalPosition + spriteHeight
+    local width = (Sprite.pipe:getWidth() - 2) * DRAW_SCALE
+    local horizontalPosition = self.position.x + 1 * DRAW_SCALE
+
+    ---@type AABB
+    local top = {
+        x = horizontalPosition,
+        y = 0,
+        width = width,
+        height = height,
+    }
+
+    verticalPosition, _, _, _ = self:calculatePipeDrawingParams(self.pipeOffset)
+    verticalPosition = verticalPosition - spriteHeight
+
+    local bottom = {
+        x = horizontalPosition,
+        y = verticalPosition,
+        width = width,
+        height = love.graphics.getHeight() - verticalPosition,
+    }
+
+    return top, bottom
 end
 
 ---Update pipe position

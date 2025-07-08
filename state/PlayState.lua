@@ -2,6 +2,8 @@
 local Colors = require("Colors")
 local Bird = require("Bird")
 local Pipe = require("Pipe")
+local Collision = require("Collision")
+local DebugSettings = require("DebugSettings")
 
 -- Constants
 local PIPE_SPAWN_DELAY = 4
@@ -102,9 +104,18 @@ function PlayState:drawEntities()
     -- Draw pipes
     for _, pipe in ipairs(self.pipes) do
         pipe:draw()
+
+        if DebugSettings.drawAABBs then
+            local top, bottom = pipe:getAABBs()
+            Collision.drawAABB(top)
+            Collision.drawAABB(bottom)
+        end
     end
 
     self.bird:draw()
+    if DebugSettings.drawAABBs then
+        Collision.drawAABB(self.bird:getAABB())
+    end
 end
 
 ---Main draw function
@@ -141,11 +152,23 @@ function PlayState:updateTimer(dt)
     end
 end
 
+function PlayState:checkCollisions()
+    local birdAABB = self.bird:getAABB()
+    for _, pipe in ipairs(self.pipes) do
+        local topAABB, bottomAABB = pipe:getAABBs()
+        if Collision.checkCollision(birdAABB, topAABB) or
+           Collision.checkCollision(birdAABB, bottomAABB) then
+            self:reset()
+        end
+    end
+end
+
 ---Main update function
 ---@param dt number
 function PlayState:update(dt)
     self:updateEntities(dt)
     self:updateTimer(dt)
+    self:checkCollisions()
 end
 
 ---Handle escape key press

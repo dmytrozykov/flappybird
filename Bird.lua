@@ -130,13 +130,13 @@ function Bird:update(dt)
     self:applyVelocity(dt)
 end
 
----Get bird center position
----@return Position
-function Bird:getCenter()
-    local bounds = self:getBounds()
+---@return AABB
+function Bird:getAABB()
     return {
-        x = self.position.x + bounds.width / 2,
-        y = self.position.y + bounds.height / 2
+        x = self.position.x + (1 * self.scale),
+        y = self.position.y + (2 * self.scale),
+        width = (self.sprite:getWidth() - 3) * self.scale,
+        height = (self.sprite:getHeight() - 3) * self.scale,
     }
 end
 
