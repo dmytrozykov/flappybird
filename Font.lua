@@ -9,6 +9,7 @@ local FontFamily = {
 ---@enum Font
 local Font = {
   upheaval = {
+    score = love.graphics.newFont(FontFamily.upheaval, 72),
     title = love.graphics.newFont(FontFamily.upheaval, 48),
     paragraph = love.graphics.newFont(FontFamily.upheaval, 24)
   },

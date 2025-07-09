@@ -1,5 +1,5 @@
 local DebugSettings = {
-    drawAABBs = true,
+    drawAABBs = false,
 }
 
 return DebugSettings

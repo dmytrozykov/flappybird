@@ -4,6 +4,8 @@ local Bird = require("Bird")
 local Pipe = require("Pipe")
 local Collision = require("Collision")
 local DebugSettings = require("DebugSettings")
+local Font = require("Font")
+local Sound = require("Sound")
 
 -- Constants
 local PIPE_SPAWN_DELAY = 4
@@ -18,6 +20,7 @@ local MENU_STATE_NAME = "MenuState"
 ---@field pipeSpawnTimer number
 ---@field screenWidth number
 ---@field screenHeight number
+---@field score number
 local PlayState = {
     name = "PlayState"
 }
@@ -71,6 +74,7 @@ end
 ---Reset game state to initial conditions
 function PlayState:reset()
     -- Clear cached dimensions to get fresh values
+    self.score = 0
     self.screenWidth = nil
     self.screenHeight = nil
     self:initializeEntities()
@@ -118,10 +122,29 @@ function PlayState:drawEntities()
     end
 end
 
+function PlayState:drawScore()
+    local font = Font.upheaval.score
+    local shadowOffset = 5
+    local width = font:getWidth(self.score) + shadowOffset
+    local x, y = self.screenWidth / 2 - width / 2, 15
+
+    love.graphics.setFont(font)
+
+    -- Draw shadow
+    love.graphics.setColor(Colors.shadow)
+    love.graphics.print(self.score, x + shadowOffset, y + shadowOffset)
+
+    -- Draw score
+    love.graphics.setColor(Colors.text)
+    love.graphics.print(self.score, x, y)
+
+end
+
 ---Main draw function
 function PlayState:draw()
     self:drawBackground()
     self:drawEntities()
+    self:drawScore()
 end
 
 ---Update all game entities
@@ -152,6 +175,15 @@ function PlayState:updateTimer(dt)
     end
 end
 
+---@param pipe Pipe
+function PlayState:checkScore(pipe)
+    if pipe:getIsPassed(self.bird.position) then
+        Sound.beep:stop()
+        Sound.beep:play()
+        self.score = self.score + 1
+    end
+end
+
 function PlayState:checkCollisions()
     local birdAABB = self.bird:getAABB()
     for _, pipe in ipairs(self.pipes) do
@@ -159,7 +191,10 @@ function PlayState:checkCollisions()
         if Collision.checkCollision(birdAABB, topAABB) or
            Collision.checkCollision(birdAABB, bottomAABB) then
             self:reset()
+            return
         end
+
+        self:checkScore(pipe)
     end
 end
 

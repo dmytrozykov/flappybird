@@ -11,6 +11,7 @@ local DEFAULT_MOVE_SPEED = 50
 ---@field moveSpeed number
 ---@field drawScale number
 ---@field pipeOffset number
+---@field isPassed boolean
 local Pipe = {}
 
 ---@param position Position
@@ -24,6 +25,7 @@ function Pipe:new(position, moveSpeed, drawScale, pipeOffset)
         moveSpeed = moveSpeed or DEFAULT_MOVE_SPEED,
         drawScale = drawScale or DRAW_SCALE,
         pipeOffset = pipeOffset or PIPE_OFFSET,
+        isPassed = false,
     }
     
     setmetatable(pipe, {__index = self})
@@ -150,6 +152,20 @@ function Pipe:getAABBs()
     }
 
     return top, bottom
+end
+
+---@param other Position
+---@return boolean
+function Pipe:getIsPassed(other)
+    local isPassed = other.x >= self.position.x + Sprite.pipe:getWidth()
+
+    -- Count only once
+    if not self.isPassed and isPassed then
+        self.isPassed = true
+        return true
+    end
+
+    return false
 end
 
 ---Update pipe position

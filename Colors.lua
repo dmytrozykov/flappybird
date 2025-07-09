@@ -12,6 +12,8 @@ local Colors = {
   },
 
   text = {1, 1, 1},
+
+  shadow = {0, 0, 0},
 }
 
 return Colors
