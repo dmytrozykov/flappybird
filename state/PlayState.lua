@@ -9,6 +9,7 @@ local Sound = require("Sound")
 
 -- Constants
 local PIPE_SPAWN_DELAY = 4
+local LOST_SCREEN_DELAY = 2
 local ESCAPE_KEY = "escape"
 local MENU_STATE_NAME = "MenuState"
 
@@ -18,9 +19,11 @@ local MENU_STATE_NAME = "MenuState"
 ---@field bird Bird
 ---@field pipes Pipe[]
 ---@field pipeSpawnTimer number
+---@filed lostTimer number
 ---@field screenWidth number
 ---@field screenHeight number
 ---@field score number
+---@field lost boolean
 local PlayState = {
     name = "PlayState"
 }
@@ -67,18 +70,20 @@ function PlayState:initializeEntities()
     self.pipes = {}
 end
 
-function PlayState:initializeTimer()
+function PlayState:initializeTimers()
     self.pipeSpawnTimer = 0
+    self.lostTimer = 0
 end
 
 ---Reset game state to initial conditions
 function PlayState:reset()
     -- Clear cached dimensions to get fresh values
     self.score = 0
+    self.lost = false
     self.screenWidth = nil
     self.screenHeight = nil
     self:initializeEntities()
-    self:initializeTimer()
+    self:initializeTimers()
 end
 
 ---Constructor for PlayState
@@ -151,6 +156,10 @@ end
 ---@param dt number
 function PlayState:updateEntities(dt)
     self.bird:update(dt)
+
+    if self.lost then
+        return
+    end
     
     -- Update pipes
     for i, pipe in ipairs(self.pipes) do
@@ -167,11 +176,19 @@ function PlayState:spawnPipe()
 end
 
 ---@param dt number
-function PlayState:updateTimer(dt)
+function PlayState:updatePipeTimer(dt)
     self.pipeSpawnTimer = self.pipeSpawnTimer + dt
     if self.pipeSpawnTimer >= PIPE_SPAWN_DELAY then
         self:spawnPipe()
         self.pipeSpawnTimer = self.pipeSpawnTimer - PIPE_SPAWN_DELAY
+    end
+end
+
+---@param dt number
+function PlayState:updateLostTimer(dt)
+    self.lostTimer = self.lostTimer + dt
+    if self.lostTimer >= LOST_SCREEN_DELAY then
+        self.stateManager:switch("LostState")
     end
 end
 
@@ -184,13 +201,25 @@ function PlayState:checkScore(pipe)
     end
 end
 
+function PlayState:lose()
+    self.lost = true
+    Sound.lose:play()
+end
+
+function PlayState:checkBounds()
+    local aabb = self.bird:getAABB()
+    if aabb.y + aabb.height > love.graphics.getHeight() or aabb.y < 0 then
+        self:lose()
+    end
+end
+
 function PlayState:checkCollisions()
     local birdAABB = self.bird:getAABB()
     for _, pipe in ipairs(self.pipes) do
         local topAABB, bottomAABB = pipe:getAABBs()
         if Collision.checkCollision(birdAABB, topAABB) or
            Collision.checkCollision(birdAABB, bottomAABB) then
-            self:reset()
+            self:lose()
             return
         end
 
@@ -202,8 +231,13 @@ end
 ---@param dt number
 function PlayState:update(dt)
     self:updateEntities(dt)
-    self:updateTimer(dt)
-    self:checkCollisions()
+    if not self.lost then
+        self:updatePipeTimer(dt)
+        self:checkCollisions()
+        self:checkBounds()
+    else
+        self:updateLostTimer(dt)
+    end
 end
 
 ---Handle escape key press
@@ -214,6 +248,9 @@ end
 ---Handle other key presses
 ---@param key love.KeyConstant
 function PlayState:handleGameInput(key)
+    if self.lost then
+        return
+    end
     self.bird:keypressed(key)
 end
 

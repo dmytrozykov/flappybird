@@ -33,15 +33,22 @@ function MenuState:new(stateManager)
 end
 
 local function drawTitle()
-  love.graphics.setColor(Colors.text)
-  love.graphics.setFont(Font.upheaval.title)
+    local text = "Flappy Bird"
+    local font = Font.upheaval.title
+    local shadowOffset = 5
+    local width = font:getWidth(text)
+    local x, y = ScreenSpace.toScreen(0, -0.5)
+    x = x - width / 2
 
-  local title = "Flappy Bird"
-  local titleWidth = Font.upheaval.title:getWidth(title)
-  local titleX, titleY = ScreenSpace.toScreen(0, -0.5)
-  titleX = titleX - titleWidth / 2
+    love.graphics.setFont(font)
 
-  love.graphics.print(title, titleX, titleY)
+     -- Draw shadow
+    love.graphics.setColor(Colors.shadow)
+    love.graphics.print(text, x + shadowOffset, y + shadowOffset)
+
+    -- Draw text
+    love.graphics.setColor(Colors.text)
+    love.graphics.print(text, x, y)
 end
 
 local function drawBird()
