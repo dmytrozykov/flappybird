@@ -6,12 +6,14 @@ local Collision = require("Collision")
 local DebugSettings = require("DebugSettings")
 local Font = require("Font")
 local Sound = require("Sound")
+local Save = require("Save")
 
 -- Constants
 local PIPE_SPAWN_DELAY = 4
 local LOST_SCREEN_DELAY = 2
 local ESCAPE_KEY = "escape"
 local MENU_STATE_NAME = "MenuState"
+local LOST_STATE_NAME = "LostState"
 
 ---@class PlayState
 ---@field name string
@@ -24,6 +26,7 @@ local MENU_STATE_NAME = "MenuState"
 ---@field screenHeight number
 ---@field score number
 ---@field lost boolean
+---@field isHighscore boolean
 local PlayState = {
     name = "PlayState"
 }
@@ -79,6 +82,7 @@ end
 function PlayState:reset()
     -- Clear cached dimensions to get fresh values
     self.score = 0
+    self.isHighscore = false
     self.lost = false
     self.screenWidth = nil
     self.screenHeight = nil
@@ -188,7 +192,7 @@ end
 function PlayState:updateLostTimer(dt)
     self.lostTimer = self.lostTimer + dt
     if self.lostTimer >= LOST_SCREEN_DELAY then
-        self.stateManager:switch("LostState")
+        self.stateManager:switch(LOST_STATE_NAME, self.isHighscore)
     end
 end
 
@@ -204,6 +208,12 @@ end
 function PlayState:lose()
     self.lost = true
     Sound.lose:play()
+
+    local highScore = Save.loadHighscore()
+    if highScore == nil or self.score > highScore then
+        Save.saveHighscore(self.score)
+        self.isHighscore = true
+    end
 end
 
 function PlayState:checkBounds()

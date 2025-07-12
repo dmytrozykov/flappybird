@@ -4,7 +4,7 @@ local Sound = require("Sound")
 
 -- Constants
 local DEFAULT_GRAVITY_FORCE = 1500
-local DEFAULT_FLAP_FORCE = 550
+local DEFAULT_FLAP_FORCE = 520
 local DEFAULT_SCALE = 10
 local FLAP_KEY = "space"
 local SPRITE_FILTER = "nearest"

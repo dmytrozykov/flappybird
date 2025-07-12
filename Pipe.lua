@@ -3,7 +3,7 @@ local Sprite = require("Sprite")
 
 -- Constants
 local DRAW_SCALE = 10
-local PIPE_OFFSET = 173
+local PIPE_OFFSET = 172
 local DEFAULT_MOVE_SPEED = 50
 
 ---@class Pipe

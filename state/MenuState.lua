@@ -5,6 +5,7 @@ local Button = require("Button")
 local Font = require("Font")
 local ScreenSpace = require("ScreenSpace")
 local Sprite = require("Sprite")
+local Save = require("Save")
 
 ---@class MenuState
 ---@field stateManger StateManager
@@ -42,7 +43,31 @@ local function drawTitle()
 
     love.graphics.setFont(font)
 
-     -- Draw shadow
+    -- Draw shadow
+    love.graphics.setColor(Colors.shadow)
+    love.graphics.print(text, x + shadowOffset, y + shadowOffset)
+
+    -- Draw text
+    love.graphics.setColor(Colors.text)
+    love.graphics.print(text, x, y)
+end
+
+local function drawHighscore()
+    local highScore = Save.loadHighscore()
+    if highScore == nil then
+        return
+    end
+
+    local text = "Highscore: " .. highScore
+    local font = Font.upheaval.paragraph
+    local shadowOffset = 3
+    local width = font:getWidth(text)
+    local x, y = ScreenSpace.toScreen(0, -0.2)
+    x = x - width / 2
+
+    love.graphics.setFont(font)
+
+    -- Draw shadow
     love.graphics.setColor(Colors.shadow)
     love.graphics.print(text, x + shadowOffset, y + shadowOffset)
 
@@ -70,6 +95,8 @@ function MenuState:draw()
   drawTitle()
 
   self.playButton:draw()
+
+  drawHighscore()
 end
 
 ---@param dt number
